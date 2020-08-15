@@ -1,0 +1,82 @@
+//------------------------------------------------
+//--- 010 Editor v10.0.2 Binary Template
+//
+//      File: JpnIHDS.bt
+//   Authors: kazamiya
+//   Version: 0.1
+//   Purpose: Template for MS-IME JpnIHDS.dat
+//  Category: IME
+//   History: 2020-08-15, initial release
+//------------------------------------------------
+
+// These structure are based on several JpnIHDS.dat files
+typedef struct {
+  FILETIME modified_time;
+  int      file_size;
+  int      unknown1;
+  int      record_num;
+  int      header_size;
+  int      unknown2; 
+  int      data_size;
+} FHeader <read=ReadFHeader>;
+
+typedef struct {
+  FILETIME conv_time;
+  short    record_size;
+  short    header_size;
+  byte     unknown1;
+  byte     conv_num;
+  short    unknown2;
+} RHeader <read=ReadRHeader>;
+
+typedef struct {
+  short    body_size;
+  byte     input_length;
+  byte     conv_length;
+  int      unknown3 <format=hex>;
+  wchar_t  in_str[input_length];
+  if (conv_length > 0)
+    wchar_t conv_str[conv_length];
+} RBody <read=ReadRBody>;
+
+// Display information to Template Results
+string ReadFHeader(FHeader &header) {
+  return FileTimeToString(header.modified_time, "yyyy-MM-dd hh:mm:ssZ");
+}
+
+string ReadRHeader(RHeader &header) {
+  return FileTimeToString(header.conv_time, "yyyy-MM-dd hh:mm:ssZ");
+}
+
+wstring ReadRBody(RBody &body) {
+  if(body.conv_length == 0)
+    return body.in_str;
+  else
+    return body.in_str + ", " + body.conv_str;
+}
+
+local int i, j, cur_pos; 
+
+LittleEndian();
+FHeader FileHeader;
+cur_pos = FileHeader.header_size;
+
+// It seems 'FileHeader.record_num' record continue until 'FileHeader.data_size'
+// for(i=0; i<FileHeader.record_num; i++) {
+// However, data still continue after 'FileHeader.data_size'
+
+// This template tries to parse the end of file 'FileHeader.file_size'
+while(FTell() < FileHeader.file_size) {
+
+  // Some file & record header contain irregular data (=no fixed-size)
+  // The position need to be adjusted with $header_size
+  FSeek(cur_pos);
+  RHeader RecordHeader;
+
+  FSeek(cur_pos+RecordHeader.header_size);
+  RBody RecordBody;
+  for(j=1; j<RecordHeader.conv_num; j++)
+    RBody RecordBody;
+
+  cur_pos += RecordHeader.record_size;
+}
