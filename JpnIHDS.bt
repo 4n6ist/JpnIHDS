@@ -14,26 +14,26 @@ typedef struct {
   FILETIME modified_time;
   int      file_size;
   int      unknown1;
-  int      record_num;
+  int      history_num;
   int      header_size;
-  int      unknown2; 
-  int      data_size;
+  int      learn_num; 
+  int      history_size;
 } FHeader <read=ReadFHeader>;
 
 typedef struct {
   FILETIME conv_time;
   short    record_size;
   short    header_size;
-  byte     unknown1;
+  byte     unknown2;
   byte     conv_num;
-  short    unknown2;
+  short    unknown3;
 } RHeader <read=ReadRHeader>;
 
 typedef struct {
   short    body_size;
   byte     input_length;
   byte     conv_length;
-  int      unknown3 <format=hex>;
+  int      unknown4 <format=hex>;
   wchar_t  in_str[input_length];
   if (conv_length > 0)
     wchar_t conv_str[conv_length];
