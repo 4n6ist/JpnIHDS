@@ -81,7 +81,8 @@ def parse_record_body(input_file, rbody, inputlist, convlist, mergelist, unknown
         mergelist.append(input_chars)
 
 def utc_to_jst(timestamp_utc):
-    timestamp_jst = timestamp_utc.astimezone(timezone(timedelta(hours=+9)))
+#    timestamp_jst = timestamp_utc.astimezone(timezone(timedelta(hours=+9)))
+    timestamp_jst = timestamp_utc + timedelta(hours=+9)
     converted_jst = datetime.strftime(timestamp_jst, '%Y-%m-%d %H:%M:%S.%f')
     return converted_jst
 
