@@ -136,7 +136,7 @@ def parse_jpnihds(input_file, output, debug):
             csv.writer(output, delimiter="\t", lineterminator="\n", quoting=csv.QUOTE_ALL).writerow(record_field)
         except UnicodeEncodeError as err:
             print('UnicodeEncodeError has occurred. To save the result, use -o option instead of redirect.', file=sys.stderr)
-            exit()
+            sys.exit("Quit.")
         record_field = []
         num += 1
         cur_pos += rhdr.record_size
