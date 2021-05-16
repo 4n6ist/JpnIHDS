@@ -130,8 +130,13 @@ def parse_jpnihds(input_file, output, debug):
         merge_str="".join(mergelist)
         unknown4_str=" ".join(unknown4list)
 
-        record_field.extend([cur_pos, num, tsstr_utc, tsstr_jst, input_str, conv_str, merge_str, rhdr.unknown2, rhdr.unknown3, unknown4_str])        
-        csv.writer(output, delimiter="\t", lineterminator="\n", quoting=csv.QUOTE_ALL).writerow(record_field)
+        record_field.extend([cur_pos, num, tsstr_utc, tsstr_jst, input_str, conv_str, merge_str, rhdr.unknown2, rhdr.unknown3, unknown4_str])
+        
+        try:
+            csv.writer(output, delimiter="\t", lineterminator="\n", quoting=csv.QUOTE_ALL).writerow(record_field)
+        except UnicodeEncodeError as err:
+            print('UnicodeEncodeError has occurred. To save the result, use -o option instead of redirect.', file=sys.stderr)
+            exit()
         record_field = []
         num += 1
         cur_pos += rhdr.record_size
@@ -142,6 +147,7 @@ def main():
     parser.add_argument("-o", "--output", help="Output File (Default: stdout)")
     parser.add_argument("--debug", action="store_true", default=False, help="Debug Mode")
     args = parser.parse_args()
+    
     if os.path.exists(os.path.abspath(args.input)):
         input_file = open(args.input, "rb")
     else:
